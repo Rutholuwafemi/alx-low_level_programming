@@ -1,66 +1,60 @@
-#include "holberton.h"
+/*
+ * File: 100-realloc.c
+ * Auth: Brennan D Baraban
+ */
+
+#include "main.h"
 #include <stdlib.h>
 
 /**
- *_realloc - function reallocates a memory block using malloc and free
- *@ptr: pointer to the memory previously allocated
- *@old_size: size in bytes
- *@new_size: size in bytes
- *Return: pointer
+ * _realloc - Reallocates a memory block using malloc and free.
+ * @ptr: A pointer to the memory previously allocated.
+ * @old_size: The size in bytes of the allocated space for ptr.
+ * @new_size: The size in bytes for the new memory block.
+ *
+ * Return: If new_size == old_size - ptr.
+ *         If new_size == 0 and ptr is not NULL - NULL.
+ *         Otherwise - a pointer to the reallocated memory block.
  */
-
 void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size)
 {
-	void *reaptr;
+	void *mem;
+	char *ptr_copy, *filler;
+	unsigned int index;
+
+	if (new_size == old_size)
+		return (ptr);
 
 	if (ptr == NULL)
 	{
-		reaptr = malloc(new_size);
-		if (reaptr == NULL)
-		{
-			free(ptr);
+		mem = malloc(new_size);
+
+		if (mem == NULL)
 			return (NULL);
-		}
-		free(ptr);
-		return (reaptr);
+
+		return (mem);
 	}
-	if (new_size == old_size)
-		return (ptr);
+
 	if (new_size == 0 && ptr != NULL)
 	{
 		free(ptr);
 		return (NULL);
 	}
-	reaptr = malloc(new_size);
-	if (reaptr == NULL)
+
+	ptr_copy = ptr;
+	mem = malloc(sizeof(*ptr_copy) * new_size);
+
+	if (mem == NULL)
 	{
 		free(ptr);
 		return (NULL);
 	}
-	if (new_size > old_size)
-		_memcpy(reaptr, ptr, old_size);
+
+	filler = mem;
+
+	for (index = 0; index < old_size && index < new_size; index++)
+		filler[index] = *ptr_copy++;
+
 	free(ptr);
-	return (reaptr);
-}
-
-/**
- * _memcpy - function that copies memory area
- * @dest: dest positions
- * @src: source position
- * @n: size of bytes
- * Return: char
- */
-
-char *_memcpy(char *dest, char *src, unsigned int n)
-{
-	unsigned int i = 0;
-	unsigned int j = 0;
-
-	while (i < n)
-	{
-		*(dest + i) = *(src + j);
-		i += 1;
-		j += 1;
-	}
-	return (dest);
+	return (mem);
 }
